@@ -1,5 +1,5 @@
 #include "mediainfo_wrapper.h"
-
+#include <iostream>
 namespace MediaInfoNative
 {
 
@@ -7,6 +7,8 @@ MediaInfoWrapper::MediaInfoWrapper()
 : file_opened(false)
 {
   mi = new MediaInfoDLL::MediaInfo();
+  mi->Option("Inform", "XML");
+  mi->Option("Complete", "1");
 }
 
 MediaInfoWrapper::~MediaInfoWrapper()

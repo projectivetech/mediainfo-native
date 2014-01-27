@@ -11,11 +11,9 @@ describe MediaInfoNative::MediaInfo do
     end
 
     it 'works with an mov file' do
-      expect(subject.inform(File.expand_path('../../file.mov', __FILE__))).to be_a(String)
-    end
-
-    it 'works with the big blackmagic file' do
-      expect(subject.inform(File.expand_path('../../blackmagic.mov', __FILE__))).to be_a(String)
+      path = File.expand_path('../../file.mov', __FILE__)
+      pending "Please create mov file #{path}" if !File.file?(path)
+      expect(subject.inform(path)).to be_a(String)
     end
   end
 end
