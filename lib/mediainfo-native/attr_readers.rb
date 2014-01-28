@@ -32,16 +32,17 @@ module MediaInfoNative
     
     def mediainfo_duration_reader(*a)
       mediainfo_attr_reader *a do |v|
-        t = 0
-        if v.include?(":")
+        case
+        when v.include?(":")
           # If it is like 00:20:30.600
           splitted = v.split(/:|\./)
-          t = (splitted[0].to_i * 60 * 60 * 1000) + 
+          (splitted[0].to_i * 60 * 60 * 1000) + 
             (splitted[1].to_i * 60 * 1000) + 
             (splitted[2].to_i * 1000) +
             (splitted[3].to_i)
-        elsif v.include?('ms')
+        when v.include?('ms')
           # If it is like '20mn 30s 600ms'
+          t = 0
           v.split(/\s+/).each do |tf|
             case tf
             # TODO: Haven't actually seen how they represent hours yet 
@@ -52,15 +53,13 @@ module MediaInfoNative
             when /\d+s/  then t += tf.to_i * 1000
             end
           end
-        elsif /\A\d\z/ =~ v
-          puts "hell"
+          t
+        when /\A\d+\z/ =~ v
           v.to_i
         else
-          v.to_i
-          #puts "TimeFragment: #{v}"
-#          raise "unexpected time fragment! please report bug!"
+          puts "TimeFragment: #{v}"
+          raise "unexpected time fragment! please report bug!"
         end
-        t
       end
     end
     
