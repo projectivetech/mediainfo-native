@@ -8,6 +8,6 @@ The gem is designed as a drop-in replacement for the [Mediainfo gem](https://git
 
 # License
 
-The gem is licensed under the MIT License. See the [LICENSE]https://raw2.github.com/FlavourSys/mediainfo-native/master/LICENSE) file for more information.
+The gem is licensed under the MIT License. See the [LICENSE](https://raw2.github.com/FlavourSys/mediainfo-native/master/LICENSE) file for more information.
 
 Parts of the code have been reused from the old Mediainfo or at least are heavily inspired from the old code (esp. the convenience API). The Mediainfo gem is licensed under the [WTF Public License](http://www.wtfpl.net/txt/copying/) and we guess it is conformant with the terms of that license to re-license the code under the MIT license.
