@@ -14,6 +14,12 @@ module MediaInfoNative
     def method_missing(meth, *args, &block)
       self.general.send(meth, *args, &block)
     end
+
+    [:video, :audio, :image].each do |t|
+      define_method "#{t}?" do
+        self.send(t).count > 0
+      end
+    end
   end
 
   class StreamProxy
@@ -29,12 +35,12 @@ module MediaInfoNative
     def count; @streams.size; end
 
     def method_missing(m, *a, &b)
-      case streams.size
+      case @streams.size
       when 0
         raise NoStreamsForProxyError
       when 1
-        if streams.first.respond_to?(m)
-          streams.first.send(m, *a, &b)
+        if @streams.first.respond_to?(m)
+          @streams.first.send(m, *a, &b)
         else
           raise UnknownAttributeError
         end
