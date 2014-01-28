@@ -26,6 +26,7 @@ module MediaInfoNative
     UnknownAttributeError  = Class.new(NoMethodError)
     
     def [](idx); @streams[idx]; end
+    def count; @streams.size; end
 
     def method_missing(m, *a, &b)
       case streams.size
