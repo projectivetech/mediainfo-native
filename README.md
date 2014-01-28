@@ -1,6 +1,6 @@
 # MediaInfoNative
 
-This gem provides a native ruby extension to interface with the [Mediainfo library](mediaarea.net/en/MediaInfo/).
+This gem provides a native ruby extension to interface with the [Mediainfo library](http://mediaarea.net/en/MediaInfo/).
 
 # Usage
 
