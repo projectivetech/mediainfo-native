@@ -1,6 +1,6 @@
-#include "MediaInfoDLL.h"
 #include "mediainfo_wrapper.h"
 #include "basestream.h"
+#include "unicode.h"
 
 namespace MediaInfoNative
 {
@@ -114,7 +114,7 @@ void MediaInfoWrapper::open(VALUE path)
   if(file_opened)
     rb_raise(rb_eStandardError, "already opened a file");
 
-  MediaInfoDLL::String mi_path(StringValuePtr(path));
+  MediaInfoDLL::String mi_path = value_to_ansi_string(path);
 
   if(mi->Open(mi_path) != 1)
     rb_raise(rb_eStandardError, "failed to open");
@@ -154,7 +154,7 @@ VALUE MediaInfoWrapper::inform() const
 {
   CHECK_OPEN;
 
-  return rb_str_new2(mi->Inform().c_str());
+  return ansi_string_to_value(mi->Inform());
 }
 
 void MediaInfoWrapper::notifyOfStreamDestruction(BaseStream* stream)

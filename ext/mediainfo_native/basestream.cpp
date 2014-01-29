@@ -1,6 +1,6 @@
-#include "MediaInfoDLL.h"
 #include "basestream.h"
 #include "mediainfo_wrapper.h"
+#include "unicode.h"
 
 namespace MediaInfoNative
 {
@@ -81,8 +81,8 @@ VALUE BaseStream::lookup(VALUE key) const
     rb_raise(rb_eStandardError, "stream is invalid");
 
 
-  MediaInfoDLL::String mi_key(StringValueCStr(key));
-  return rb_str_new2(wrapper->getMediaInfo()->Get(type, idx, mi_key).c_str());
+  MediaInfoDLL::String mi_key = value_to_ansi_string(key);
+  return ansi_string_to_value(wrapper->getMediaInfo()->Get(type, idx, mi_key));
 }
 
 } /* namespace MediaInfoNative */
