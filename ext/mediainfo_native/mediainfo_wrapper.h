@@ -3,12 +3,12 @@
 
 #include <list>
 #include <ruby.h>
-#include "MediaInfoDLL.h"
+#include "basestream.h"
+
+namespace MediaInfoDLL { class MediaInfo; }
 
 namespace MediaInfoNative
 {
-
-class BaseStream;
 
 class MediaInfoWrapper
 {
@@ -19,17 +19,16 @@ public:
   void  open(VALUE path);
   void  close();
   VALUE wrapStreams();
+
   VALUE inform() const;
+  VALUE get(StreamType type, unsigned int idx, VALUE key) const;
 
   void notifyOfStreamDestruction(BaseStream* stream);
-  MediaInfoDLL::MediaInfo* getMediaInfo();
 
 private:
-  void  lzld() const;
-
   bool                     file_opened;
   MediaInfoDLL::MediaInfo* mi;
-  std::list<BaseStream*> streams;
+  std::list<BaseStream*>   streams;
 };
 
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative);

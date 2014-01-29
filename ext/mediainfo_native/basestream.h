@@ -2,17 +2,28 @@
 #define MEDIAINFO_NATIVE_BASESTREAM_H
 
 #include <ruby.h>
-#include "MediaInfoDLL.h"
 
 namespace MediaInfoNative
 {
+
+enum StreamType
+{
+  GENERAL,
+  VIDEO,
+  AUDIO,
+  TEXT,
+  OTHER,
+  IMAGE,
+  MENU,
+  STREAM_TYPE_MAX
+};
 
 class MediaInfoWrapper;
 
 class BaseStream
 {
 public:
-  BaseStream(MediaInfoDLL::stream_t _type, unsigned int _idx, MediaInfoWrapper* _wrapper);
+  BaseStream(StreamType _type, unsigned int _idx, MediaInfoWrapper* _wrapper);
   ~BaseStream();
   void notifyOfWrapperDestruction();
   void invalidate();
@@ -22,7 +33,7 @@ public:
 
 private:
   bool valid;
-  const MediaInfoDLL::stream_t type;
+  const StreamType type;
   const unsigned int idx;
   MediaInfoWrapper* wrapper;
 };
