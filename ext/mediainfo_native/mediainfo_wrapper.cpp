@@ -1,5 +1,5 @@
+#include "MediaInfoDLL.h"
 #include "mediainfo_wrapper.h"
-#include "basestream.h"
 #include "unicode.h"
 
 namespace MediaInfoNative
@@ -87,6 +87,31 @@ void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
 #define CHECK_OPEN  \
   if(!file_opened) rb_raise(rb_eStandardError, "no file opened")
 
+MediaInfoDLL::stream_t convertToMediaInfoStreamType(StreamType type)
+{
+  switch(type) {
+  case GENERAL:
+    return MediaInfoDLL::Stream_General;
+  case VIDEO:
+    return MediaInfoDLL::Stream_Video;
+  case AUDIO:
+    return MediaInfoDLL::Stream_Audio;
+  case TEXT:
+    return MediaInfoDLL::Stream_Text;
+  case OTHER:
+    return MediaInfoDLL::Stream_Other;
+  case IMAGE:
+    return MediaInfoDLL::Stream_Image;
+  case MENU:
+    return MediaInfoDLL::Stream_Menu;
+  }
+}
+
+MediaInfoDLL::stream_t convertToMediaInfoStreamType(unsigned int type)
+{
+  return convertToMediaInfoStreamType((StreamType) type);
+}
+
 MediaInfoWrapper::MediaInfoWrapper()
 : file_opened(false)
 {
@@ -140,14 +165,20 @@ VALUE MediaInfoWrapper::wrapStreams()
   CHECK_OPEN;
 
   VALUE ary = rb_ary_new();
-  for(unsigned int st = 0; st < ((unsigned int) MediaInfoDLL::Stream_Max); ++st) {
-    for(unsigned int count = 0; count < mi->Count_Get((MediaInfoDLL::stream_t) st); ++count) {
-      BaseStream* bs = new BaseStream((MediaInfoDLL::stream_t) st, count, this);
+  for(unsigned int st = 0; st < ((unsigned int) STREAM_TYPE_MAX); ++st) {
+    for(unsigned int count = 0; count < mi->Count_Get(convertToMediaInfoStreamType(st)); ++count) {
+      BaseStream* bs = new BaseStream((StreamType) st, count, this);
       rb_ary_push(ary, bs->wrap());
     }
   }
 
   return ary;
+}
+
+VALUE MediaInfoWrapper::get(StreamType type, unsigned int idx, VALUE key) const
+{
+  MediaInfoDLL::String mi_key(value_to_ansi_string(key));
+  return ansi_string_to_value(mi->Get(convertToMediaInfoStreamType(type), idx, mi_key));
 }
 
 VALUE MediaInfoWrapper::inform() const
@@ -160,25 +191,6 @@ VALUE MediaInfoWrapper::inform() const
 void MediaInfoWrapper::notifyOfStreamDestruction(BaseStream* stream)
 {
   streams.remove(stream);
-}
-
-MediaInfoDLL::MediaInfo* MediaInfoWrapper::getMediaInfo()
-{
-  return mi;
-}
-
-void MediaInfoWrapper::lzld() const
-{
-  /*
-   * NOTE: Due to the weird manual way of lazy runtime linking
-   *       used in MediaInfoDLL.h, this useless function is needed
-   *       to tell the compiler to load the MediaInfo_Get symbol
-   *       from the shared library (probably on MediaInfoWrapper
-   *       class instantiation). If this is commented out, calls
-   *       to Get() in the BaseStream will fail with a segmentation
-   *       fault.
-   */
-  mi->Get((MediaInfoDLL::stream_t) 0, 0, "");
 }
 
 } /* namespace MediaInfoNative */
