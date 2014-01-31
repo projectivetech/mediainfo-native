@@ -6,6 +6,10 @@ This gem provides a native ruby extension to interface with the [Mediainfo libra
 
 The gem is designed as a drop-in replacement for the [Mediainfo gem](https://github.com/FlavourSys/mediainfo) (original version [here](https://github.com/greatseth/mediainfo)), but uses the MediaInfoLib directly in order to improve performance and reliability. Whenever possible the original API has been made available.
 
+# MediaInfoLib
+
+The MediaInfoLib does not automatically install the `libmediainfo.pc` file. You need to do this manually until I care to make the gem not fail when it doesn't exist.
+
 # License
 
 The gem is licensed under the MIT License. See the [LICENSE](https://raw2.github.com/FlavourSys/mediainfo-native/master/LICENSE) file for more information.
