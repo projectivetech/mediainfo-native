@@ -67,6 +67,14 @@ extern "C"
     return inform;
   }
 
+  static VALUE miw_option(VALUE self)
+  {
+    GET_WRAPPER(miw);
+
+    VALUE option = miw->option();
+    return option;
+  }
+
 }
 
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
@@ -80,6 +88,7 @@ void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
   rb_define_method(cMediaInfo, "streams", (RUBYFUNC) miw_streams, 0);
 
   rb_define_method(cMediaInfo, "inform", (RUBYFUNC) miw_inform, 1);
+  rb_define_method(cMediaInfo, "option", (RUBYFUNC) miw_option, 0);
 }
 
 /* ************************** MediaInfoWrapper ****************************** */
@@ -186,6 +195,11 @@ VALUE MediaInfoWrapper::inform() const
   CHECK_OPEN;
 
   return ansi_string_to_value(mi->Inform());
+}
+
+VALUE MediaInfoWrapper::option() const
+{
+  return ansi_string_to_value(mi->Option("Info_Parameters"));
 }
 
 void MediaInfoWrapper::notifyOfStreamDestruction(BaseStream* stream)
