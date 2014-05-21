@@ -56,6 +56,8 @@ module MediaInfoNative
           t
         when /\A\d+\z/ =~ v
           v.to_i
+        when /\A\d+\.\d+\z/ =~ v
+          v.to_f.round
         else
           puts "TimeFragment: #{v}"
           raise "unexpected time fragment! please report bug!"
