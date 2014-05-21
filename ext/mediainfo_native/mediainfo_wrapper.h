@@ -21,6 +21,7 @@ public:
   VALUE wrapStreams();
 
   VALUE inform() const;
+  VALUE option() const;
   VALUE get(StreamType type, unsigned int idx, VALUE key) const;
 
   void notifyOfStreamDestruction(BaseStream* stream);

@@ -4,8 +4,6 @@ unless (mediainfo_cfg = pkg_config('libmediainfo'))
   abort 'Failed to locate pkg-config file for libmediainfo.'
 end
 
-puts mediainfo_cfg
-
 unless have_library('mediainfo')
   abort 'Failed to test-link against libmediainfo.'
 end
