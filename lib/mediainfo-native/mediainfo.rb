@@ -15,7 +15,7 @@ module MediaInfoNative
       self.general.send(meth, *args, &block)
     end
 
-    [:video, :audio, :image].each do |t|
+    [:video, :audio, :image, :other].each do |t|
       define_method "#{t}?" do
         self.send(t).count > 0
       end
