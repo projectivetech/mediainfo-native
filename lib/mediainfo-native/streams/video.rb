@@ -28,6 +28,7 @@ module MediaInfoNative
     end
 
     mediainfo_int_reader :bitdepth, 'BitDepth'
+    alias_method :bit_depth, :bitdepth
 
     mediainfo_int_reader :resolution, 'Resolution'
 
