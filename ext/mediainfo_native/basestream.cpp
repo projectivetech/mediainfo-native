@@ -48,25 +48,8 @@ void Init_BaseStream(VALUE mMediaInfoNative)
 /* ************************** BaseStream ************************************ */
 
 BaseStream::BaseStream(StreamType _type, unsigned int _idx, MediaInfoWrapper* _wrapper)
-: valid(true), type(_type), idx(_idx), wrapper(_wrapper)
+: type(_type), idx(_idx), wrapper(_wrapper)
 {
-}
-
-BaseStream::~BaseStream()
-{
-  if(wrapper)
-    wrapper->notifyOfStreamDestruction(this);
-}
-
-void BaseStream::notifyOfWrapperDestruction()
-{
-  invalidate();
-  wrapper = NULL;
-}
-
-void BaseStream::invalidate()
-{
-  valid = false;
 }
 
 VALUE BaseStream::wrap()
@@ -76,9 +59,6 @@ VALUE BaseStream::wrap()
 
 VALUE BaseStream::lookup(VALUE key) const
 {
-  if(!valid)
-    rb_raise(rb_eStandardError, "stream is invalid");
-
   return wrapper->get(type, idx, key);
 }
 

@@ -2,7 +2,6 @@
 #define MEDIAINFO_NATIVE_MEDIAINFO_WRAPPER_H
 
 #include <list>
-#include <pthread.h>
 #include <ruby.h>
 #include "basestream.h"
 
@@ -25,14 +24,10 @@ public:
   VALUE option() const;
   VALUE get(StreamType type, unsigned int idx, VALUE key) const;
 
-  void notifyOfStreamDestruction(BaseStream* stream);
 
 private:
   bool                     file_opened;
   MediaInfoDLL::MediaInfo* mi;
-
-  std::list<BaseStream*>   streams;
-  pthread_mutex_t          streams_mutex;
 };
 
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative);
