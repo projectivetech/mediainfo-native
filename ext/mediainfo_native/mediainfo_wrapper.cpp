@@ -127,22 +127,12 @@ MediaInfoWrapper::MediaInfoWrapper()
   mi = new MediaInfoDLL::MediaInfo();
   mi->Option("Inform", "XML");
   mi->Option("Complete", "1");
-
-  pthread_mutex_init(&streams_mutex, NULL);
 }
 
 MediaInfoWrapper::~MediaInfoWrapper()
 {
   if(file_opened)
     close();
-
-  pthread_mutex_lock(&streams_mutex);
-  std::list<BaseStream*>::iterator it;
-  for(it = streams.begin(); it != streams.end(); ++it)
-    (*it)->notifyOfWrapperDestruction();
-  streams.clear();
-  pthread_mutex_unlock(&streams_mutex);
-  pthread_mutex_destroy(&streams_mutex);
 
   if(mi != NULL)
     delete mi;
@@ -165,11 +155,6 @@ void MediaInfoWrapper::close()
 {
   CHECK_OPEN;
   
-  std::list<BaseStream*>::iterator it;
-  for(it = streams.begin(); it != streams.end(); ++it)
-    (*it)->invalidate();
-  streams.clear();
-
   mi->Close();
   file_opened = false;
 }
@@ -205,15 +190,6 @@ VALUE MediaInfoWrapper::inform() const
 VALUE MediaInfoWrapper::option() const
 {
   return ansi_string_to_value(mi->Option("Info_Parameters"));
-}
-
-void MediaInfoWrapper::notifyOfStreamDestruction(BaseStream* stream)
-{
-  // Might become EINVAL after destruction.
-  if(pthread_mutex_lock(&streams_mutex) == 0) {
-    streams.remove(stream);
-    pthread_mutex_unlock(&streams_mutex);
-  }
 }
 
 } /* namespace MediaInfoNative */

@@ -24,15 +24,11 @@ class BaseStream
 {
 public:
   BaseStream(StreamType _type, unsigned int _idx, MediaInfoWrapper* _wrapper);
-  ~BaseStream();
-  void notifyOfWrapperDestruction();
-  void invalidate();
 
   VALUE wrap();
   VALUE lookup(VALUE key) const;
 
 private:
-  bool valid;
   const StreamType type;
   const unsigned int idx;
   MediaInfoWrapper* wrapper;

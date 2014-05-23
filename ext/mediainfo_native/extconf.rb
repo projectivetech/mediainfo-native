@@ -8,10 +8,6 @@ unless have_library('mediainfo')
   abort 'Failed to test-link against libmediainfo.'
 end
 
-unless have_library('pthread')
-  abort 'Failed to test-link against pthread.'
-end
-
 non_std_location = mediainfo_cfg.detect { |flag| flag =~ /^-L/ }
 if non_std_location
   non_std_location.gsub!('-L', '')
