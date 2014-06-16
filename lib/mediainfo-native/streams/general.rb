@@ -21,6 +21,7 @@ module MediaInfoNative
 
     # ID3Tags
     mediainfo_attr_reader :artist, 'Artist'
+    mediainfo_attr_reader :performer, 'Performer'
     mediainfo_attr_reader :title, 'Title'
     mediainfo_attr_reader :genre, 'Genre'
     mediainfo_attr_reader :album, 'Album'
