@@ -16,7 +16,7 @@ public:
   MediaInfoWrapper();
   ~MediaInfoWrapper();
 
-  void  open(VALUE path);
+  int   open(VALUE path);
   void  close();
   VALUE wrapStreams();
 
