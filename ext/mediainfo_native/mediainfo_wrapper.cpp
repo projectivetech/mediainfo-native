@@ -16,7 +16,7 @@ namespace MediaInfoNative
 
 typedef struct {
   MediaInfoWrapper* miw;
-  VALUE path;
+  MediaInfoDLL::String path;
   int result;
 } OpenParams;
 
@@ -55,8 +55,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    OpenParams params = { miw, path };
-
+    OpenParams params = { miw, value_to_ansi_string(path), 0 };
     rb_thread_call_without_gvl(miw_open_without_gvl, (void*) &params, NULL, NULL);
 
     switch(params.result) {
@@ -84,7 +83,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    miw->open(path);
+    miw->open(value_to_ansi_string(path));
     VALUE inform = miw->inform();
     miw->close();
 
@@ -162,14 +161,12 @@ MediaInfoWrapper::~MediaInfoWrapper()
     delete mi;
 }
 
-int MediaInfoWrapper::open(VALUE path)
+int MediaInfoWrapper::open(std::string path)
 {
   if(file_opened)
     return 1;
 
-  MediaInfoDLL::String mi_path = value_to_ansi_string(path);
-
-  if(mi->Open(mi_path) != 1)
+  if(mi->Open(path) != 1)
     return 2;
 
   file_opened = true;
