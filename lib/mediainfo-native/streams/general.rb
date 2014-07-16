@@ -18,5 +18,14 @@ module MediaInfoNative
     mediainfo_date_reader :tagged_date, 'Tagged_Date'
     mediainfo_date_reader :encoded_date, 'Encoded_Date'
     mediainfo_date_reader :last_modification_date, 'File_Modified_Date'
+
+    # ID3Tags
+    mediainfo_attr_reader :artist, 'Artist'
+    mediainfo_attr_reader :performer, 'Performer'
+    mediainfo_attr_reader :title, 'Title'
+    mediainfo_attr_reader :genre, 'Genre'
+    mediainfo_attr_reader :album, 'Album'
+    mediainfo_attr_reader :copyright, 'Copyright'
+    mediainfo_attr_reader :year, 'Year'
   end
 end

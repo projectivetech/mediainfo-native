@@ -3,9 +3,10 @@
 
 #include <list>
 #include <ruby.h>
+#include <string>
+#include "MediaInfoDLL.h"
 #include "basestream.h"
 
-namespace MediaInfoDLL { class MediaInfo; }
 
 namespace MediaInfoNative
 {
@@ -16,7 +17,7 @@ public:
   MediaInfoWrapper();
   ~MediaInfoWrapper();
 
-  void  open(VALUE path);
+  int   open(MediaInfoDLL::String path);
   void  close();
   VALUE wrapStreams();
 

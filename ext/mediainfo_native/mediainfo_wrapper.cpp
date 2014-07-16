@@ -1,3 +1,6 @@
+#include <ruby.h>
+#include <ruby/thread.h>
+
 #include "MediaInfoDLL.h"
 #include "mediainfo_wrapper.h"
 #include "unicode.h"
@@ -10,6 +13,12 @@ namespace MediaInfoNative
 #define GET_WRAPPER(var) \
   MediaInfoWrapper* var; \
   Data_Get_Struct(self, MediaInfoWrapper, var)
+
+typedef struct {
+  MediaInfoWrapper* miw;
+  MediaInfoDLL::String path;
+  int result;
+} OpenParams;
 
 extern "C"
 {
@@ -35,12 +44,26 @@ extern "C"
     return Qnil;
   }
 
+  static void* miw_open_without_gvl(void* ptr) {
+    OpenParams* params = (OpenParams*) ptr;
+    params->result = params->miw->open(params->path);
+    return NULL;
+  }
+
   static VALUE miw_open(VALUE self, VALUE path)
   {
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    miw->open(path);
+    OpenParams params = { miw, value_to_ansi_string(path), 0 };
+    rb_thread_call_without_gvl(miw_open_without_gvl, (void*) &params, NULL, NULL);
+
+    switch(params.result) {
+    case 1:
+      rb_raise(rb_eStandardError, "already opened a file");
+    case 2:
+      rb_raise(rb_eStandardError, "failed to open");
+    }
 
     if(rb_block_given_p())
       return rb_ensure((RUBYFUNC) rb_yield, Qnil, (RUBYFUNC) miw_close, self);
@@ -60,7 +83,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    miw->open(path);
+    miw->open(value_to_ansi_string(path));
     VALUE inform = miw->inform();
     miw->close();
 
@@ -138,17 +161,16 @@ MediaInfoWrapper::~MediaInfoWrapper()
     delete mi;
 }
 
-void MediaInfoWrapper::open(VALUE path)
+int MediaInfoWrapper::open(std::string path)
 {
   if(file_opened)
-    rb_raise(rb_eStandardError, "already opened a file");
+    return 1;
 
-  MediaInfoDLL::String mi_path = value_to_ansi_string(path);
-
-  if(mi->Open(mi_path) != 1)
-    rb_raise(rb_eStandardError, "failed to open");
+  if(mi->Open(path) != 1)
+    return 2;
 
   file_opened = true;
+  return 0;
 }
 
 void MediaInfoWrapper::close()
