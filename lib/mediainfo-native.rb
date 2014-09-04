@@ -10,6 +10,8 @@ require 'mediainfo-native/streams/other'
 require 'mediainfo-native/streams/text'
 require 'mediainfo-native/streams/video'
 require 'mediainfo-native/mediainfo'
+require 'mediainfo-native/watchdog/magic'
+require 'mediainfo-native/watchdog/mediainfo'
 require 'mediainfo-native/version'
 
 module MediaInfoNative
