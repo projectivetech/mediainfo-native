@@ -18,6 +18,7 @@ public:
   ~MediaInfoWrapper();
 
   int   open(MediaInfoDLL::String path);
+  bool  isOpen() const;
   void  close();
   VALUE wrapStreams();
 

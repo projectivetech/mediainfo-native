@@ -5,6 +5,7 @@ module MediaInfoNative
     mediainfo_duration_reader :duration, 'Duration'
     
     mediainfo_attr_reader :format, 'Format'
+    alias_method :fmt, :format
     mediainfo_attr_reader :format_profile, 'Format_Profile'
     mediainfo_attr_reader :format_info, 'Format_Info'
     mediainfo_attr_reader :codec, 'Codec'

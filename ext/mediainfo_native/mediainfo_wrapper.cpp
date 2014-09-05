@@ -71,6 +71,13 @@ extern "C"
       return Qnil;
   }
 
+  static VALUE miw_is_open(VALUE self)
+  {
+    GET_WRAPPER(miw);
+
+    return miw->isOpen() ? Qtrue : Qfalse;
+  }
+
   static VALUE miw_streams(VALUE self)
   {
     GET_WRAPPER(miw);
@@ -108,6 +115,7 @@ void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
 
   rb_define_method(cMediaInfo, "close", (RUBYFUNC) miw_close, 0);
   rb_define_method(cMediaInfo, "open", (RUBYFUNC) miw_open, 1);
+  rb_define_method(cMediaInfo, "is_open?", (RUBYFUNC) miw_is_open, 0);
   rb_define_method(cMediaInfo, "streams", (RUBYFUNC) miw_streams, 0);
 
   rb_define_method(cMediaInfo, "inform", (RUBYFUNC) miw_inform, 1);
@@ -171,6 +179,11 @@ int MediaInfoWrapper::open(std::string path)
 
   file_opened = true;
   return 0;
+}
+
+bool MediaInfoWrapper::isOpen() const
+{
+  return file_opened;
 }
 
 void MediaInfoWrapper::close()
