@@ -11,8 +11,16 @@ module MediaInfoNative
       end
     end
 
+    def respond_to?(meth, include_all = false)
+      (is_open? && self.general.respond_to?(meth, include_all)) || super
+    end
+
     def method_missing(meth, *args, &block)
-      self.general.send(meth, *args, &block)
+      if self.general.respond_to?(meth)
+        self.general.send(meth, *args, &block)
+      else
+        super
+      end
     end
 
     [:video, :audio, :image, :other].each do |t|
@@ -20,6 +28,10 @@ module MediaInfoNative
         self.send(t).count > 0
       end
     end
+
+    # Alias the open method as it is actually a Kernel method and
+    # brings trouble with method_missing approaches.
+    alias_method :open_file, :open
   end
 
   class StreamProxy
@@ -33,6 +45,19 @@ module MediaInfoNative
     
     def [](idx); @streams[idx]; end
     def count; @streams.size; end
+
+    def respond_to?(meth, include_all = false)
+      begin
+        case @streams.size
+        when 0
+          false
+        when 1
+          @streams.first.respond_to?(meth, include_all)
+        else
+          raise SingleStreamAPIError
+        end
+      end || super
+    end
 
     def method_missing(m, *a, &b)
       case @streams.size
