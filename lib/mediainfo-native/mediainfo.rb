@@ -53,6 +53,8 @@ module MediaInfoNative
           false
         when 1
           @streams.first.respond_to?(meth, include_all)
+        when [:[], :count].include?(meth)
+          true
         else
           raise SingleStreamAPIError
         end
