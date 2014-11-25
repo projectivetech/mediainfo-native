@@ -13,7 +13,7 @@ describe MediaInfoNative::MediaInfo do
     it 'raises an error for missing files' do
       expect {
         subject.inform('nonexist')
-      }.to raise_error(/failed to open/)
+      }.to raise_error(/no file opened/)
     end
 
     it 'works with an mov file' do
@@ -25,10 +25,10 @@ describe MediaInfoNative::MediaInfo do
     it 'works' do
       subject.open(mov_file) do
         subject.streams.each do |s|
-          puts "== #{s.stream_type} =="
+          expect(s.stream_type).to be_a(Symbol)
           
           s.class.supported_attributes.each do |a|
-            puts "#{a} : #{s.send(a)}"
+            expect(s.respond_to?(a)).to be true
           end
         end
       end
