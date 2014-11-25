@@ -14,7 +14,7 @@ namespace MediaInfoNative
 class MediaInfoWrapper
 {
 public:
-  MediaInfoWrapper();
+  MediaInfoWrapper(bool ignore_continuous_file_names);
   ~MediaInfoWrapper();
 
   int   open(MediaInfoDLL::String path);
