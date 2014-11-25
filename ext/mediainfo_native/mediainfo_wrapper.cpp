@@ -30,9 +30,22 @@ extern "C"
     delete ((MediaInfoWrapper*) ptr);
   }
 
-  static VALUE miw_new(VALUE klass)
+  static VALUE miw_new(VALUE klass, VALUE args)
   {
-    MediaInfoWrapper* miw = new MediaInfoWrapper();
+    if(RARRAY_LEN(args) > 1)
+      rb_raise(rb_eArgError, "wrong number of arguments");
+
+    bool ignore_continuous_file_names = true;
+
+    if(RARRAY_LEN(args) == 1) {
+      VALUE opts = rb_ary_entry(args, 0);
+      Check_Type(opts, T_HASH);
+
+      VALUE vicfn = rb_hash_aref(opts, ID2SYM(rb_intern("ignore_continuous_file_names")));
+      ignore_continuous_file_names = TYPE(vicfn) == T_TRUE;
+    }
+
+    MediaInfoWrapper* miw = new MediaInfoWrapper(ignore_continuous_file_names);
     return Data_Wrap_Struct(klass, 0, miw_free, miw);
   }
 
@@ -111,7 +124,7 @@ void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
 {
   VALUE cMediaInfo = rb_define_class_under(mMediaInfoNative, "MediaInfo", rb_cObject);
 
-  rb_define_singleton_method(cMediaInfo, "new", (RUBYFUNC) miw_new, 0);
+  rb_define_singleton_method(cMediaInfo, "new", (RUBYFUNC) miw_new, -2);
 
   rb_define_method(cMediaInfo, "close", (RUBYFUNC) miw_close, 0);
   rb_define_method(cMediaInfo, "open", (RUBYFUNC) miw_open, 1);
@@ -152,12 +165,13 @@ MediaInfoDLL::stream_t convertToMediaInfoStreamType(unsigned int type)
   return convertToMediaInfoStreamType((StreamType) type);
 }
 
-MediaInfoWrapper::MediaInfoWrapper()
+MediaInfoWrapper::MediaInfoWrapper(bool ignore_continuous_file_names)
 : file_opened(false)
 {
   mi = new MediaInfoDLL::MediaInfo();
   mi->Option("Inform", "XML");
   mi->Option("Complete", "1");
+  mi->Option("File_TestContinuousFileNames", ignore_continuous_file_names ? "0" : "1");
 }
 
 MediaInfoWrapper::~MediaInfoWrapper()
