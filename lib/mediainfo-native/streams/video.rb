@@ -44,6 +44,7 @@ module MediaInfoNative
     mediainfo_attr_reader :format_settings_reframes, 'Format_Settings_ReFrames'
     mediainfo_attr_reader :format_settings_matrix, 'Format_Settings_Matrix'
     mediainfo_attr_reader :format_settings_gop, 'Format_Settings_GOP'
+    mediainfo_attr_reader :format_commercial, 'Format_Commercial'
     
     mediainfo_attr_reader :colour_primaries, 'colour_primaries'
     alias_method :color_primaries, :colour_primaries
