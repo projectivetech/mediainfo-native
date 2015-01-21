@@ -18,6 +18,19 @@ MediaInfoNative::MediaInfo.new(ignore_continuous_file_names: true)
 
 The MediaInfoLib does not automatically install the `libmediainfo.pc` file. You need to do this manually until I care to make the gem not fail when it doesn't exist.
 
+# Contribution
+
+Want to contribute? Great!
+Either use [GitFlow](https://github.com/nvie/gitflow) as we do or
+
+1. Fork it.
+2. Create a branch (git checkout -b my_stuff)
+3. Commit your changes (git commit -am "Added new accessor")
+4. Push to the branch (git push origin my_markup)
+5. Open a Pull Request
+6. Enjoy a refreshing Mate and wait
+7. Profit!
+
 # License
 
 The gem is licensed under the MIT License. See the [LICENSE](https://raw2.github.com/FlavourSys/mediainfo-native/master/LICENSE) file for more information.
