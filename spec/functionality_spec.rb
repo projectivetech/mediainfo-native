@@ -1,4 +1,3 @@
-require 'fileutils'
 require 'spec_helper'
 
 describe MediaInfoNative::MediaInfo do
