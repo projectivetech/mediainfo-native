@@ -6,9 +6,30 @@ This gem provides a native ruby extension to interface with the [Mediainfo libra
 
 The gem is designed as a drop-in replacement for the [Mediainfo gem](https://github.com/FlavourSys/mediainfo) (original version [here](https://github.com/greatseth/mediainfo)), but uses the MediaInfoLib directly in order to improve performance and reliability. Whenever possible the original API has been made available.
 
+## Disable continuous file names detection
+
+MediaInfo performs some detection on continuous file names (e.g., image sequences) and might therefore for example report `video?` as `true` where you expect it to be `false`. If you want to disable this feature, instantiate with:
+
+```
+MediaInfoNative::MediaInfo.new(ignore_continuous_file_names: true)
+```
+
 # MediaInfoLib
 
 The MediaInfoLib does not automatically install the `libmediainfo.pc` file. You need to do this manually until I care to make the gem not fail when it doesn't exist.
+
+# Contribution
+
+Want to contribute? Great!
+Either use [GitFlow](https://github.com/nvie/gitflow) as we do or
+
+1. Fork it.
+2. Create a branch (git checkout -b my_stuff)
+3. Commit your changes (git commit -am "Added new accessor")
+4. Push to the branch (git push origin my_markup)
+5. Open a Pull Request
+6. Enjoy a refreshing Mate and wait
+7. Profit!
 
 # License
 

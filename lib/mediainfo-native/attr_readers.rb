@@ -58,6 +58,8 @@ module MediaInfoNative
           v.to_i
         when /\A\d+\.\d+\z/ =~ v
           v.to_f.round
+        when v.empty?
+          nil
         else
           raise "unexpected time fragment! please report bug!"
         end
