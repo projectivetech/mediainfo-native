@@ -67,7 +67,7 @@ module MediaInfoNative
     def nominal_fps
       nominal_frame_rate[/[\d.]+/].to_f if nominal_frame_rate
     end
-    alias_method :nominal_frame_rate, :nominal_fps
+    alias_method :nominal_framerate, :nominal_fps
 
     mediainfo_attr_reader :minimum_frame_rate, 'FrameRate_Minimum'
     def min_fps
