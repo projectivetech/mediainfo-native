@@ -10,8 +10,16 @@ module MediaInfoNative
     mediainfo_attr_reader :format_info, 'Format_Info'
     mediainfo_attr_reader :codec, 'Codec'
     mediainfo_attr_reader :overall_bit_rate, 'OverallBitRate'
+    mediainfo_attr_reader :encoded_application_string, 'Encoded_Application/String'
     mediainfo_attr_reader :encoded_application, 'Encoded_Application'
-    alias_method :writing_application, :encoded_application
+    alias_method :writing_application, :encoded_application_string
+
+    # Since MediaInfo v0.7.76 encoded_application is replaced by
+    # encoded_application_string. So lets check which one is empty.
+    def writing_application
+      encoded_application.empty? ? encoded_application_string : encoded_application
+    end
+
     mediainfo_attr_reader :encoded_library, 'Encoded_Library'
     alias_method :writing_library, :encoded_library
     
