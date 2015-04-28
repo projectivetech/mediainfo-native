@@ -1,19 +1,36 @@
 #include <ruby.h>
-#include <ruby/encoding.h>
+#include <cstdlib>
 #include "unicode.h"
 
-MediaInfoDLL::String value_to_ansi_string(VALUE s)
+MediaInfoDLL::String value_to_mediainfo_string(VALUE s)
 {
-  rb_encoding* enc = rb_enc_find("ANSI");
-  VALUE exported = rb_str_export_to_enc(s, enc);
-  return MediaInfoDLL::String(StringValueCStr(exported));
+  size_t  nchars = RSTRING_LEN(s);
+  wchar_t buf[nchars + 1];
+
+  nchars = mbstowcs(buf, StringValueCStr(s), nchars);
+
+  if((size_t) (-1) == nchars)
+    rb_raise(rb_eArgError, "invalid multi-byte sequence in char array");
+  else
+    // According to mbstowcs(3), this is not nul-terminated when max characters
+    // have been written.
+    buf[nchars] = L'\0';
+
+  return MediaInfoDLL::String(buf);
 }
 
-VALUE ansi_string_to_value(MediaInfoDLL::String s)
+VALUE mediainfo_string_to_value(MediaInfoDLL::String s)
 {
-#ifdef RBX_RUBY_VERSION
-  return rb_external_str_new_with_enc(s.c_str(), s.length(), rb_enc_find("ANSI"));
-#else
-  return rb_external_str_new_with_enc(s.c_str(), s.length(), rb_ascii8bit_encoding());
-#endif
+  size_t nbytes = s.length() * 2;
+  char   buf[nbytes + 1];
+
+  nbytes = wcstombs(buf, s.data(), nbytes);
+
+  if((size_t) (-1) == nbytes)
+    rb_raise(rb_eArgError, "wide-char sequence not representable in char array");
+  else
+    // This should actually always be there, just to make sure.
+    buf[nbytes] = '\0';
+
+  return rb_locale_str_new_cstr(buf);
 }

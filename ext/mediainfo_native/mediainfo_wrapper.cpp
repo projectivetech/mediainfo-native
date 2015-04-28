@@ -68,7 +68,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    OpenParams params = { miw, value_to_ansi_string(path), 0 };
+    OpenParams params = { miw, value_to_mediainfo_string(path), 0 };
     rb_thread_call_without_gvl(miw_open_without_gvl, (void*) &params, NULL, NULL);
 
     switch(params.result) {
@@ -103,7 +103,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    miw->open(value_to_ansi_string(path));
+    miw->open(value_to_mediainfo_string(path));
     VALUE inform = miw->inform();
     miw->close();
 
@@ -169,9 +169,9 @@ MediaInfoWrapper::MediaInfoWrapper(bool ignore_continuous_file_names)
 : file_opened(false)
 {
   mi = new MediaInfoDLL::MediaInfo();
-  mi->Option("Inform", "XML");
-  mi->Option("Complete", "1");
-  mi->Option("File_TestContinuousFileNames", ignore_continuous_file_names ? "0" : "1");
+  mi->Option(L"Inform", L"XML");
+  mi->Option(L"Complete", L"1");
+  mi->Option(L"File_TestContinuousFileNames", ignore_continuous_file_names ? L"0" : L"1");
 }
 
 MediaInfoWrapper::~MediaInfoWrapper()
@@ -183,7 +183,7 @@ MediaInfoWrapper::~MediaInfoWrapper()
     delete mi;
 }
 
-int MediaInfoWrapper::open(std::string path)
+int MediaInfoWrapper::open(MediaInfoDLL::String path)
 {
   if(file_opened)
     return 1;
@@ -225,20 +225,20 @@ VALUE MediaInfoWrapper::wrapStreams()
 
 VALUE MediaInfoWrapper::get(StreamType type, unsigned int idx, VALUE key) const
 {
-  MediaInfoDLL::String mi_key(value_to_ansi_string(key));
-  return ansi_string_to_value(mi->Get(convertToMediaInfoStreamType(type), idx, mi_key));
+  MediaInfoDLL::String mi_key(value_to_mediainfo_string(key));
+  return mediainfo_string_to_value(mi->Get(convertToMediaInfoStreamType(type), idx, mi_key));
 }
 
 VALUE MediaInfoWrapper::inform() const
 {
   CHECK_OPEN;
 
-  return ansi_string_to_value(mi->Inform());
+  return mediainfo_string_to_value(mi->Inform());
 }
 
 VALUE MediaInfoWrapper::option() const
 {
-  return ansi_string_to_value(mi->Option("Info_Parameters"));
+  return mediainfo_string_to_value(mi->Option(L"Info_Parameters"));
 }
 
 } /* namespace MediaInfoNative */

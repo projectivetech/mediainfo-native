@@ -4,7 +4,7 @@
 #include <ruby.h>
 #include "MediaInfoDLL.h"
 
-MediaInfoDLL::String value_to_ansi_string(VALUE s);
-VALUE ansi_string_to_value(MediaInfoDLL::String s);
+MediaInfoDLL::String value_to_mediainfo_string(VALUE s);
+VALUE mediainfo_string_to_value(MediaInfoDLL::String s);
   
 #endif /* MEDIAINFO_NATIVE_UNICODE_H */
