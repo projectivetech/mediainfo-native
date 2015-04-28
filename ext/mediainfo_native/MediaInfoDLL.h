@@ -16,8 +16,8 @@
 #define MediaInfoDLLH
 
 
-#undef UNICODE
-#undef _UNICODE
+#define UNICODE
+#define _UNICODE
 
 //***************************************************************************
 // Platforms (from libzen)
