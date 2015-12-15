@@ -1,9 +1,11 @@
 #include <ruby.h>
+#include <ruby/encoding.h>
 #include <ruby/thread.h>
 
 #include "MediaInfoDLL.h"
 #include "mediainfo_wrapper.h"
-#include "unicode.h"
+
+#include <stdio.h>
 
 namespace MediaInfoNative
 {
@@ -68,7 +70,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    OpenParams params = { miw, value_to_mediainfo_string(path), 0 };
+    OpenParams params = { miw, miw->value_to_mediainfo_string(path), 0 };
     rb_thread_call_without_gvl(miw_open_without_gvl, (void*) &params, NULL, NULL);
 
     switch(params.result) {
@@ -103,7 +105,7 @@ extern "C"
     Check_Type(path, T_STRING);
     GET_WRAPPER(miw);
 
-    miw->open(value_to_mediainfo_string(path));
+    miw->open(miw->value_to_mediainfo_string(path));
     VALUE inform = miw->inform();
     miw->close();
 
@@ -168,6 +170,13 @@ MediaInfoDLL::stream_t convertToMediaInfoStreamType(unsigned int type)
 MediaInfoWrapper::MediaInfoWrapper(bool ignore_continuous_file_names)
 : file_opened(false)
 {
+  if (!rb_default_external_encoding())
+    rb_raise(rb_eStandardError, "rb_default_external_encoding returns null!");
+  cd_in  = iconv_open("WCHAR_T", rb_default_external_encoding()->name);
+  cd_out = iconv_open(rb_default_external_encoding()->name, "WCHAR_T");
+  if ((cd_in == (iconv_t)(-1)) || (cd_out == (iconv_t)(-1)))
+    rb_raise(rb_eStandardError, "iconv_open failed! do you have a weird internal encoding?");
+
   mi = new MediaInfoDLL::MediaInfo();
   mi->Option(L"Inform", L"XML");
   mi->Option(L"Complete", L"1");
@@ -176,6 +185,9 @@ MediaInfoWrapper::MediaInfoWrapper(bool ignore_continuous_file_names)
 
 MediaInfoWrapper::~MediaInfoWrapper()
 {
+  iconv_close(cd_in);
+  iconv_close(cd_out);
+
   if(file_opened)
     close();
 
@@ -239,6 +251,39 @@ VALUE MediaInfoWrapper::inform() const
 VALUE MediaInfoWrapper::option() const
 {
   return mediainfo_string_to_value(mi->Option(L"Info_Parameters"));
+}
+
+MediaInfoDLL::String MediaInfoWrapper::value_to_mediainfo_string(VALUE s) const
+{
+  size_t  nbytes_in  = RSTRING_LEN(s) + 1;
+  size_t  nbytes_out = nbytes_in * sizeof(wchar_t);
+  wchar_t buf[nbytes_in];
+  size_t  rv;
+
+  char* src = (char*) StringValueCStr(s);
+  char* dst = (char*) buf;
+
+  iconv(cd_in, NULL, 0, NULL, 0); /* Reset iconv state just to be sure. */
+  if (iconv(cd_in, &src, &nbytes_in, &dst, &nbytes_out) == (-1))
+    rb_raise(rb_eStandardError, "iconv failure");
+
+  return MediaInfoDLL::String(buf);
+}
+
+VALUE MediaInfoWrapper::mediainfo_string_to_value(MediaInfoDLL::String s) const
+{
+  size_t nbytes_in  = (s.length() + 1) * sizeof(wchar_t);
+  size_t nbytes_out = nbytes_in; /* Worst case is all 4-bytes wchar_t will convert to 4-byte UTF-8. */
+  char   buf[nbytes_out];
+
+  char* src = (char*) s.data();
+  char* dst = buf;
+
+  iconv(cd_out, NULL, 0, NULL, 0); /* Reset iconv state just to be sure. */
+  if (iconv(cd_out, &src, &nbytes_in, &dst, &nbytes_out) == (-1))
+    rb_raise(rb_eStandardError, "iconv failure (invalid byte sequence?)");
+
+  return rb_str_new2(buf);
 }
 
 } /* namespace MediaInfoNative */

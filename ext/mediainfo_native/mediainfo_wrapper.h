@@ -1,6 +1,7 @@
 #ifndef MEDIAINFO_NATIVE_MEDIAINFO_WRAPPER_H
 #define MEDIAINFO_NATIVE_MEDIAINFO_WRAPPER_H
 
+#include <iconv.h>
 #include <list>
 #include <ruby.h>
 #include <string>
@@ -26,10 +27,14 @@ public:
   VALUE option() const;
   VALUE get(StreamType type, unsigned int idx, VALUE key) const;
 
+  MediaInfoDLL::String value_to_mediainfo_string(VALUE s) const;
+  VALUE mediainfo_string_to_value(MediaInfoDLL::String s) const;
 
 private:
   bool                     file_opened;
   MediaInfoDLL::MediaInfo* mi;
+  iconv_t                  cd_in;
+  iconv_t                  cd_out;
 };
 
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative);
