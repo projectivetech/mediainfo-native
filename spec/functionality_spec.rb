@@ -28,4 +28,24 @@ describe MediaInfoNative::MediaInfo do
       end
     end
   end
+
+  describe 'metadata' do
+    it 'has #datasize' do
+      subject.open(video_mov) do
+        expect(subject.datasize).to be(15994)
+      end
+    end
+
+    it 'has #headersize' do
+      subject.open(video_mov) do
+        expect(subject.headersize).to be(28)
+      end
+    end
+
+    it 'has #footersize' do
+      subject.open(video_mov) do
+        expect(subject.footersize).to be(1457)
+      end
+    end
+  end
 end
