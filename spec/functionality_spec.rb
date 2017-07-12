@@ -20,7 +20,7 @@ describe MediaInfoNative::MediaInfo do
       subject.open(video_mov) do
         subject.streams.each do |s|
           expect(s.stream_type).to be_a(Symbol)
-          
+
           s.class.supported_attributes.each do |a|
             expect(s.respond_to?(a)).to be_truthy
           end
