@@ -8,7 +8,7 @@ module MediaInfoNative
       /(\w+)Stream/.match(self.class.name)[1].downcase.to_sym
     end
 
-    TYPES.each do |type| 
+    TYPES.each do |type|
       define_method("#{type}?") { type == stream_type }
     end
   end

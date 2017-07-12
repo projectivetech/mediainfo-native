@@ -12,6 +12,9 @@ module MediaInfoNative
     mediainfo_attr_reader :overall_bit_rate, 'OverallBitRate'
     mediainfo_attr_reader :encoded_application_string, 'Encoded_Application/String'
     mediainfo_attr_reader :encoded_application, 'Encoded_Application'
+    mediainfo_int_reader :headersize, 'HeaderSize'
+    mediainfo_int_reader :datasize, 'DataSize'
+    mediainfo_int_reader :footersize, 'FooterSize'
     alias_method :writing_application, :encoded_application_string
 
     # Since MediaInfo v0.7.76 encoded_application is replaced by
