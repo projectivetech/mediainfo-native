@@ -35,6 +35,8 @@ module MediaInfoNative
   end
 
   class StreamProxy
+    include Enumerable
+
     def initialize(streams)    
       @streams = streams
     end
@@ -45,6 +47,10 @@ module MediaInfoNative
     
     def [](idx); @streams[idx]; end
     def count; @streams.size; end
+
+    def each(&blk)
+      @streams.each(&blk)
+    end
 
     def respond_to?(meth, include_all = false)
       begin
