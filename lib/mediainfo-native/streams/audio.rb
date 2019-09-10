@@ -28,6 +28,8 @@ module MediaInfoNative
     mediainfo_attr_reader :codec, 'Codec'
     mediainfo_attr_reader :codec_id_hint, 'CodecID/Hint'
     mediainfo_attr_reader :channel_positions, 'ChannelPositions'
+    mediainfo_attr_reader :muxing_mode, 'MuxingMode'
+    mediainfo_attr_reader :muxing_mode_info, 'MuxingMode_MoreInfo'
 
     mediainfo_int_reader :channels, 'Channel(s)'
     def stereo?; 2 == channels; end
