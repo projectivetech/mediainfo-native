@@ -47,5 +47,11 @@ describe MediaInfoNative::MediaInfo do
         expect(subject.footersize).to be(1457)
       end
     end
+
+    it 'implements Enumerable correctly' do
+      subject.open(video_mov) do
+        expect(subject.video.map { |vt| vt}.length).to eq(1)
+      end
+    end
   end
 end
