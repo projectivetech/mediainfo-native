@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.summary       = 'Native bindings for mediainfo'
   s.description   = 'Extracts metadata from media files with mediainfo shared library'
 
-  s.authors       = ['FlavourSys Technology GmbH']
-  s.email         = 'technology@flavoursys.com'
-  s.homepage      = 'http://github.com/flavoursys/mediainfo-native'
+  s.authors       = ['Projective Technology GmbH']
+  s.email         = 'technology@projective.io'
+  s.homepage      = 'https://github.com/projectivetech/mediainfo-native'
 
   s.extensions    = ['ext/mediainfo_native/extconf.rb']
   s.require_paths = ['lib']
