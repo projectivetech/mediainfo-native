@@ -73,7 +73,7 @@ module MediaInfoNative
     end
 
     def mediainfo_int_reader(*a)
-      mediainfo_attr_reader(*a) { |v| v.gsub(/\D+/, "").to_i }
+      mediainfo_attr_reader(*a) { |v| v.gsub(/[^\d.]+/, "").to_i }
     end
   end
 end
