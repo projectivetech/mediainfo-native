@@ -53,5 +53,11 @@ describe MediaInfoNative::MediaInfo do
         expect(subject.video.map { |vt| vt}.length).to eq(1)
       end
     end
+
+    it 'interprets CAF sample rate correctly' do
+      subject.open(audio_caf) do
+        expect(subject.audio.sample_rate).to be(44100)
+      end
+    end
   end
 end
