@@ -2,6 +2,7 @@ require 'mediainfo_native.so'
 
 require 'mediainfo-native/attr_readers'
 require 'mediainfo-native/base_stream'
+require 'mediainfo-native/base_stream_with_framerate'
 require 'mediainfo-native/streams/audio'
 require 'mediainfo-native/streams/general'
 require 'mediainfo-native/streams/image'
