@@ -1,5 +1,5 @@
 module MediaInfoNative
-  class VideoStream < BaseStream
+  class VideoStream < BaseStreamWithFramerate
     mediainfo_attr_reader :stream_id, 'ID'
     
     mediainfo_duration_reader :duration, 'Duration'
@@ -56,12 +56,6 @@ module MediaInfoNative
     mediainfo_attr_reader :codec_info, 'CodecID/Info'
     mediainfo_attr_reader :codec, 'Codec'
     alias_method :codec_id_info, :codec_info
-
-    mediainfo_attr_reader :frame_rate, 'FrameRate'
-    def fps
-      frame_rate[/[\d.]+/].to_f if frame_rate
-    end
-    alias_method :framerate, :fps
 
     mediainfo_attr_reader :nominal_frame_rate, 'FrameRate_Nominal'
     def nominal_fps

@@ -31,12 +31,13 @@ VALUE stream_klasses[STREAM_TYPE_MAX];
 void Init_BaseStream(VALUE mMediaInfoNative)
 {
   VALUE cBaseStream = rb_define_class_under(mMediaInfoNative, "BaseStream", rb_cObject);
+  VALUE cBaseStreamWithFramerate = rb_define_class_under(mMediaInfoNative, "BaseStreamWithFramerate", cBaseStream);
 
   stream_klasses[GENERAL] = rb_define_class_under(mMediaInfoNative, "GeneralStream", cBaseStream);
-  stream_klasses[VIDEO]   = rb_define_class_under(mMediaInfoNative, "VideoStream", cBaseStream);
+  stream_klasses[VIDEO]   = rb_define_class_under(mMediaInfoNative, "VideoStream", cBaseStreamWithFramerate);
   stream_klasses[AUDIO]   = rb_define_class_under(mMediaInfoNative, "AudioStream", cBaseStream);
   stream_klasses[TEXT]    = rb_define_class_under(mMediaInfoNative, "TextStream", cBaseStream);
-  stream_klasses[OTHER]   = rb_define_class_under(mMediaInfoNative, "OtherStream", cBaseStream);
+  stream_klasses[OTHER]   = rb_define_class_under(mMediaInfoNative, "OtherStream", cBaseStreamWithFramerate);
   stream_klasses[IMAGE]   = rb_define_class_under(mMediaInfoNative, "ImageStream", cBaseStream);
   stream_klasses[MENU]    = rb_define_class_under(mMediaInfoNative, "MenuStream", cBaseStream);
 
