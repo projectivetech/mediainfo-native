@@ -31,7 +31,9 @@ VALUE stream_klasses[STREAM_TYPE_MAX];
 void Init_BaseStream(VALUE mMediaInfoNative)
 {
   VALUE cBaseStream = rb_define_class_under(mMediaInfoNative, "BaseStream", rb_cObject);
+  rb_undef_alloc_func(cBaseStream);
   VALUE cBaseStreamWithFramerate = rb_define_class_under(mMediaInfoNative, "BaseStreamWithFramerate", cBaseStream);
+  rb_undef_alloc_func(cBaseStreamWithFramerate);
 
   stream_klasses[GENERAL] = rb_define_class_under(mMediaInfoNative, "GeneralStream", cBaseStream);
   stream_klasses[VIDEO]   = rb_define_class_under(mMediaInfoNative, "VideoStream", cBaseStreamWithFramerate);
@@ -42,6 +44,7 @@ void Init_BaseStream(VALUE mMediaInfoNative)
   stream_klasses[MENU]    = rb_define_class_under(mMediaInfoNative, "MenuStream", cBaseStream);
 
   for(unsigned int st = 0; st < STREAM_TYPE_MAX; ++st) {
+    rb_undef_alloc_func(stream_klasses[st]);
     rb_define_method(stream_klasses[st], "lookup", (VALUE(*)(...)) bs_lookup, 1);
   }
 }

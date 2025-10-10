@@ -123,6 +123,7 @@ extern "C"
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
 {
   VALUE cMediaInfo = rb_define_class_under(mMediaInfoNative, "MediaInfo", rb_cObject);
+  rb_undef_alloc_func(cMediaInfo);
 
   rb_define_singleton_method(cMediaInfo, "new", (RUBYFUNC) miw_new, -2);
 
