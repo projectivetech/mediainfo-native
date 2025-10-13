@@ -8,7 +8,7 @@ namespace MediaInfoNative
 
 #define GET_BASESTREAM(var) \
   BaseStream* var; \
-  Data_Get_Struct(self, BaseStream, var)
+  TypedData_Get_Struct(self, BaseStream, &basestream_type, var)
 
 extern "C"
 {
@@ -17,6 +17,17 @@ extern "C"
   {
     delete ((BaseStream*) ptr);
   }
+
+  static const rb_data_type_t basestream_type = {
+    "BaseStream",
+    {
+      nullptr, // mark function
+      bs_free, // free function
+      nullptr,  // memsize function
+    },
+    nullptr, nullptr,
+    RUBY_TYPED_FREE_IMMEDIATELY
+  };
 
   static VALUE bs_lookup(VALUE self, VALUE key)
   {
@@ -45,7 +56,7 @@ void Init_BaseStream(VALUE mMediaInfoNative)
 
   for(unsigned int st = 0; st < STREAM_TYPE_MAX; ++st) {
     rb_undef_alloc_func(stream_klasses[st]);
-    rb_define_method(stream_klasses[st], "lookup", (VALUE(*)(...)) bs_lookup, 1);
+    rb_define_method(stream_klasses[st], "lookup", RUBY_METHOD_FUNC(bs_lookup), 1);
   }
 }
 
@@ -58,7 +69,7 @@ BaseStream::BaseStream(StreamType _type, unsigned int _idx, MediaInfoWrapper* _w
 
 VALUE BaseStream::wrap()
 {
-  return Data_Wrap_Struct(stream_klasses[type], 0, bs_free, this);
+  return TypedData_Wrap_Struct(stream_klasses[type], &basestream_type, this);
 }
 
 VALUE BaseStream::lookup(VALUE key) const
