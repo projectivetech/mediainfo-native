@@ -16,9 +16,7 @@ module MediaInfoNative
     mediainfo_int_reader :datasize, 'DataSize'
     mediainfo_int_reader :footersize, 'FooterSize'
     alias_method :writing_application, :encoded_application_string
-
-    def streamable?
-      value = lookup('IsStreamable')
+    mediainfo_attr_reader :streamable?, 'IsStreamable' do |value|
       value.empty? ? nil : value == 'Yes'
     end
 
