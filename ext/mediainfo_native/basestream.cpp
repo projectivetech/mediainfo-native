@@ -8,7 +8,7 @@ namespace MediaInfoNative
 
 #define GET_BASESTREAM(var) \
   BaseStream* var; \
-  Data_Get_Struct(self, BaseStream, var)
+  TypedData_Get_Struct(self, BaseStream, &basestream_type, var)
 
 extern "C"
 {
@@ -17,6 +17,17 @@ extern "C"
   {
     delete ((BaseStream*) ptr);
   }
+
+  static const rb_data_type_t basestream_type = {
+    "BaseStream",
+    {
+      nullptr, // mark function
+      bs_free, // free function
+      nullptr,  // memsize function
+    },
+    nullptr, nullptr,
+    RUBY_TYPED_FREE_IMMEDIATELY
+  };
 
   static VALUE bs_lookup(VALUE self, VALUE key)
   {
@@ -31,7 +42,9 @@ VALUE stream_klasses[STREAM_TYPE_MAX];
 void Init_BaseStream(VALUE mMediaInfoNative)
 {
   VALUE cBaseStream = rb_define_class_under(mMediaInfoNative, "BaseStream", rb_cObject);
+  rb_undef_alloc_func(cBaseStream);
   VALUE cBaseStreamWithFramerate = rb_define_class_under(mMediaInfoNative, "BaseStreamWithFramerate", cBaseStream);
+  rb_undef_alloc_func(cBaseStreamWithFramerate);
 
   stream_klasses[GENERAL] = rb_define_class_under(mMediaInfoNative, "GeneralStream", cBaseStream);
   stream_klasses[VIDEO]   = rb_define_class_under(mMediaInfoNative, "VideoStream", cBaseStreamWithFramerate);
@@ -42,7 +55,8 @@ void Init_BaseStream(VALUE mMediaInfoNative)
   stream_klasses[MENU]    = rb_define_class_under(mMediaInfoNative, "MenuStream", cBaseStream);
 
   for(unsigned int st = 0; st < STREAM_TYPE_MAX; ++st) {
-    rb_define_method(stream_klasses[st], "lookup", (VALUE(*)(...)) bs_lookup, 1);
+    rb_undef_alloc_func(stream_klasses[st]);
+    rb_define_method(stream_klasses[st], "lookup", RUBY_METHOD_FUNC(bs_lookup), 1);
   }
 }
 
@@ -55,7 +69,7 @@ BaseStream::BaseStream(StreamType _type, unsigned int _idx, MediaInfoWrapper* _w
 
 VALUE BaseStream::wrap()
 {
-  return Data_Wrap_Struct(stream_klasses[type], 0, bs_free, this);
+  return TypedData_Wrap_Struct(stream_klasses[type], &basestream_type, this);
 }
 
 VALUE BaseStream::lookup(VALUE key) const
