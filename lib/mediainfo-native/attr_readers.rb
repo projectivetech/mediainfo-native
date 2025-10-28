@@ -10,20 +10,22 @@ module MediaInfoNative
     end
 
     def mediainfo_attr_reader(attribute, mediainfo_key)
-      attribute_before_type_cast = "#{attribute}_before_type_cast"
+      # Sanitize for instance variable (remove ?)
+      ivar_name = attribute.to_s.tr('?', '')
+      attribute_before_type_cast = "#{ivar_name}_before_type_cast"
 
-      define_method attribute_before_type_cast do
+      define_method "#{attribute}_before_type_cast" do
         instance_variable_get("@#{attribute_before_type_cast}") || instance_variable_set("@#{attribute_before_type_cast}", lookup(mediainfo_key))
       end
 
       define_method attribute do
-        if v = instance_variable_get("@#{attribute}")
+        if v = instance_variable_get("@#{ivar_name}")
           v
         else
-          v = send(attribute_before_type_cast)
+          v = send("#{attribute}_before_type_cast")
           v = yield v if v and block_given?
 
-          instance_variable_set("@#{attribute}", v)
+          instance_variable_set("@#{ivar_name}", v)
         end
       end
 
