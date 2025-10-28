@@ -12,7 +12,7 @@ namespace MediaInfoNative
 
 #define GET_WRAPPER(var) \
   MediaInfoWrapper* var; \
-  Data_Get_Struct(self, MediaInfoWrapper, var)
+  TypedData_Get_Struct(self, MediaInfoWrapper, &mediainfo_wrapper_type, var)
 
 typedef struct {
   MediaInfoWrapper* miw;
@@ -23,12 +23,21 @@ typedef struct {
 extern "C"
 {
 
-  typedef VALUE(*RUBYFUNC)(...);
-
   static void miw_free(void* ptr) 
   {
     delete ((MediaInfoWrapper*) ptr);
   }
+
+  static const rb_data_type_t mediainfo_wrapper_type = {
+    "MediaInfoWrapper",
+    {
+      nullptr, // mark function
+      miw_free, // free function
+      nullptr,  // memsize function
+    },
+    nullptr, nullptr, // parent, data
+    RUBY_TYPED_FREE_IMMEDIATELY
+  };
 
   static VALUE miw_new(VALUE klass, VALUE args)
   {
@@ -46,7 +55,7 @@ extern "C"
     }
 
     MediaInfoWrapper* miw = new MediaInfoWrapper(ignore_continuous_file_names);
-    return Data_Wrap_Struct(klass, 0, miw_free, miw);
+    return TypedData_Wrap_Struct(klass, &mediainfo_wrapper_type, miw);
   }
 
   static VALUE miw_close(VALUE self)
@@ -79,7 +88,7 @@ extern "C"
     }
 
     if(rb_block_given_p())
-      return rb_ensure((RUBYFUNC) rb_yield, Qnil, (RUBYFUNC) miw_close, self);
+      return rb_ensure(rb_yield, Qnil, miw_close, self);
     else
       return Qnil;
   }
@@ -123,16 +132,17 @@ extern "C"
 void Init_MediaInfoWrapper(VALUE mMediaInfoNative)
 {
   VALUE cMediaInfo = rb_define_class_under(mMediaInfoNative, "MediaInfo", rb_cObject);
+  rb_undef_alloc_func(cMediaInfo);
 
-  rb_define_singleton_method(cMediaInfo, "new", (RUBYFUNC) miw_new, -2);
+  rb_define_singleton_method(cMediaInfo, "new", RUBY_METHOD_FUNC(miw_new), -2);
 
-  rb_define_method(cMediaInfo, "close", (RUBYFUNC) miw_close, 0);
-  rb_define_method(cMediaInfo, "open", (RUBYFUNC) miw_open, 1);
-  rb_define_method(cMediaInfo, "is_open?", (RUBYFUNC) miw_is_open, 0);
-  rb_define_method(cMediaInfo, "streams", (RUBYFUNC) miw_streams, 0);
+  rb_define_method(cMediaInfo, "close", RUBY_METHOD_FUNC(miw_close), 0);
+  rb_define_method(cMediaInfo, "open", RUBY_METHOD_FUNC(miw_open), 1);
+  rb_define_method(cMediaInfo, "is_open?", RUBY_METHOD_FUNC(miw_is_open), 0);
+  rb_define_method(cMediaInfo, "streams", RUBY_METHOD_FUNC(miw_streams), 0);
 
-  rb_define_method(cMediaInfo, "inform", (RUBYFUNC) miw_inform, 1);
-  rb_define_method(cMediaInfo, "option", (RUBYFUNC) miw_option, 0);
+  rb_define_method(cMediaInfo, "inform", RUBY_METHOD_FUNC(miw_inform), 1);
+  rb_define_method(cMediaInfo, "option", RUBY_METHOD_FUNC(miw_option), 0);
 }
 
 /* ************************** MediaInfoWrapper ****************************** */
@@ -157,6 +167,9 @@ MediaInfoDLL::stream_t convertToMediaInfoStreamType(StreamType type)
     return MediaInfoDLL::Stream_Image;
   case MENU:
     return MediaInfoDLL::Stream_Menu;
+  default:
+    rb_raise(rb_eRuntimeError, "Invalid stream type: %d", (int)type);
+    __builtin_unreachable();
   }
 }
 

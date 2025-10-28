@@ -59,5 +59,18 @@ describe MediaInfoNative::MediaInfo do
         expect(subject.audio.sample_rate).to be(44100)
       end
     end
+
+    it 'has #streamable?' do
+      subject.open(video_mov) do
+        expect(subject.general).to respond_to(:streamable?)
+        expect(subject.general.streamable?).to be(false)
+      end
+    end
+
+    it 'returns nil for #streamable? when not set' do
+      subject.open(audio_caf) do
+        expect(subject.general.streamable?).to be_nil
+      end
+    end
   end
 end

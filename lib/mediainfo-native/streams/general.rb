@@ -16,6 +16,9 @@ module MediaInfoNative
     mediainfo_int_reader :datasize, 'DataSize'
     mediainfo_int_reader :footersize, 'FooterSize'
     alias_method :writing_application, :encoded_application_string
+    mediainfo_attr_reader :streamable?, 'IsStreamable' do |value|
+      value.empty? ? nil : value == 'Yes'
+    end
 
     # Since MediaInfo v0.7.76 encoded_application is replaced by
     # encoded_application_string. So lets check which one is empty.
